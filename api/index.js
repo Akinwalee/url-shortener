@@ -1,31 +1,31 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const nanoid = require('nanoid');
-// const { error } = require('console');
-const dotenv = require('dotenv')
-dotenv.config({path: '.env'})
+import express from 'express';
+import { connect, Schema as _Schema, model } from 'mongoose';
+import pkg from 'body-parser';
+const { urlencoded } = pkg;
+import { nanoid as _nanoid } from 'nanoid';
+import { config } from 'dotenv';
+config({path: '.env'})
 const app = express();
 
-app.use(bodyParser.urlencoded({extended:true}));
+app.use(urlencoded({extended:true}));
 
 // MongoDB Atlas connection
 
 const uri = process.env.MONGODB
-mongoose.connect(uri, {
+connect(uri, {
 	useUnifiedTopology: true,
 	connectTimeoutMS: 3000}
 	);
 
 //Schema
-const Schema = mongoose.Schema;
+const Schema = _Schema;
 const linkSchema = new Schema({
 	longURL: { type: String, required:true},
 	shortURL: { type: String,  required:true, unique: true},
 	creationDate: {type: Date, default: Date.now}
 	});
 
-const Link = mongoose.model('links', linkSchema);
+const Link = model('links', linkSchema);
 
 app.get('/', async(req, res) => {
 	const { longURL } = req.body
@@ -38,7 +38,7 @@ app.get('/', async(req, res) => {
 		return;
 		}
 
-		const shortURL = nanoid.nanoid(5);
+		const shortURL = _nanoid(5);
 
 		link = new Link({
 			longURL,
