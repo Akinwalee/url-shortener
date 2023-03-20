@@ -11,7 +11,7 @@ app.use(urlencoded({extended:true}));
 
 // MongoDB Atlas connection
 
-const uri = process.env.MONGODB
+const uri = 'mongodb+srv://Akinwalee:Mn9fdvfENsw1pV7y@links.vue8mgy.mongodb.net/?retryWrites=true&w=majority'
 connect(uri, {
 	useUnifiedTopology: true,
 	connectTimeoutMS: 3000}
@@ -22,7 +22,8 @@ const Schema = _Schema;
 const linkSchema = new Schema({
 	longURL: { type: String, required:true},
 	shortURL: { type: String,  required:true, unique: true},
-	creationDate: {type: Date, default: Date.now}
+	creationDate: {type: Date, default: Date.now},
+	clicks: {type: Number}
 	});
 
 const Link = model('links', linkSchema);
@@ -62,6 +63,7 @@ app.get("/short/", async(req, res)=>{
 		try {
 			let link = await Link.findOne({ shortURL });
 			if(link){
+				link.clicks += link.clicks
 				res.redirect(link.longURL)
 			}
 		}catch(err){
